@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hamm/views/log_in.dart';
+import 'package:hamm/routes/routes.dart';
 
-void main() {
-  runApp(MyApp());
-}
 
-class MyApp extends StatelessWidget {
-  
+void main() =>  runApp(MyApp());
+
+class MyApp extends StatelessWidget {  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,7 +13,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,       
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LogIn(),
+      initialRoute: 'log_in',
+      routes: appRoutes,
     );
   }
 }
