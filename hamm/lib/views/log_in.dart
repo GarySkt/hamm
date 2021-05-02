@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:hamm/routes/query.dart';
 import 'package:hamm/utils/hiddenScrollBehavior.dart';
 import 'package:hamm/views/home.dart';
 import 'package:hamm/views/register.dart';
@@ -14,6 +16,9 @@ class LogIn extends StatefulWidget {
   @override
   _LogInState createState() => _LogInState();
 }
+
+//login(email:"correo@gmail.com",password:"12345678"){
+
 
 class _LogInState extends State<LogIn> {
   final LocalAuthentication auth = LocalAuthentication();
@@ -108,51 +113,74 @@ class _Form extends StatefulWidget {
 }
 
 class __FormState extends State<_Form> {
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  QueryMutation addmutation = QueryMutation();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(children: <Widget>[
+      child: Column(
+        children: <Widget>[
           SizedBox(
-                    height: 10,
-                  ),
-                  CustomTextField(
-                    icon: Icons.mail_outline,
-                    labelText: "Correo Electrónico",
-                    keyboardType: TextInputType.emailAddress,
-                    textEditingController: emailController,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  CustomTextField(
-                    icon: Icons.lock_outline,
-                    textEditingController: passwordController,
-                    keyboardType: TextInputType.visiblePassword,                    
-                    labelText: "Contraseña",
-                    obscureText: true,                    
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  CustomRaisedButton(
-                    label: "INGRESAR",
-                    onPressed: () {
-                      print(emailController.text);
-                    },
-                  ),
-                  CustomFlatButton(
-                    text: "REGISTRARME",
-                    onPressed: () {
-                      final route = MaterialPageRoute(
-                          builder: (BuildContext _) => RegisterPage());
-                      Navigator.push(context, route);
-                    },
-                  ),
-      ],),
+            height: 10,
+          ),
+          CustomTextField(
+            icon: Icons.mail_outline,
+            labelText: "Correo Electrónico",
+            keyboardType: TextInputType.emailAddress,
+            textEditingController: emailController,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          CustomTextField(
+            icon: Icons.lock_outline,
+            textEditingController: passwordController,
+            keyboardType: TextInputType.visiblePassword,
+            labelText: "Contraseña",
+            obscureText: true,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Mutation(
+            options: MutationOptions(
+              documentNode: gql(addmutation.login(emailController.text, passwordController.text)),
+              update: (Cache cache, QueryResult result) {
+                return cache;
+              },
+              onCompleted: (dynamic resultData) {
+                print(resultData);
+              },
+            ),            
+            builder: (
+              RunMutation runMutation,
+              QueryResult result,
+            ) {
+              return CustomRaisedButton(
+                label: "INGRESAR",
+                onPressed: () {
+                  runMutation({
+                    'email': emailController.text,
+                    'password': passwordController.text
+                  });
+                },
+              );
+              }
+            
+          ),
+          CustomFlatButton(
+            text: "REGISTRARME",
+            onPressed: () {
+              final route = MaterialPageRoute(
+                  builder: (BuildContext _) => RegisterPage());
+              Navigator.push(context, route);
+            },
+          ),
+        ],
+      ),
     );
   }
 }
